@@ -3,8 +3,8 @@
 
 #include "framework.h"
 #include "Astar.h"
-#include "tile.h"
-
+#include "Tile.h"
+#include "vec2.h"
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -145,12 +145,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+    case WM_LBUTTONDOWN:
+        const Vec2<float> position( LOWORD( lParam ), HIWORD( lParam ) );
+        //tile.InputKeyButton( position );
+        break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-            tile.Draw(hdc);
+            tile.DrawTile(hdc);
             EndPaint(hWnd, &ps);
         }
         break;
