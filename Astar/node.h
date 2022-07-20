@@ -3,5 +3,14 @@
 class Node
 {
 public:
-private:
+	Node() 
+	{
+		pair = { -1,-1 };
+	}
+	Node(int x, int y)
+		:
+		pair(x, y)
+	{}
+public:
+	Vec2<int> pair;
 };
