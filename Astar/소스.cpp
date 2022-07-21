@@ -57,7 +57,7 @@ template<size_t ROW, size_t COL>
 void tracePath( const std::array<std::array<cell, COL>, ROW>& cellDetails, const Pair& dest )
 {
 	printf( "\nThe Path is" );
-
+	
 	std::stack<Pair> Path;
 
 	int row = dest.first;

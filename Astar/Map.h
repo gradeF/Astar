@@ -83,17 +83,18 @@ public:
 	}
 	void Find()
 	{
-		finder.aStarSearch(grid, start, target);
+		finder.aStarSearch( grid, start, target );
 	}
 	void ResultDraw()
 	{
-		for (int i = 0; i < tileROW * tileCOL; i++)
-		{
-			tiles[i]; 
-		}
+		
 	}
-private:
-	std::array<std::array<int, 10>, 9> grid =
+	std::vector<std::vector<int>> getGrid()
+	{
+		return grid;
+	}
+public:
+	std::vector<std::vector<int>> grid =
 	{
 	{
 		{{0,0,0,0,0,0,0,0,0,0}},
@@ -116,8 +117,8 @@ private:
 	std::vector<Tile> tiles;
 	AstartFinder finder;
 	typedef std::pair<int, int> Pair;
-	Pair start = {0,0};
+	typedef std::tuple<int , Pair> Tuple;
+	Pair start = { 0,0 };
 	Pair target = { 0,0 };
-	typedef std::tuple<double, int, int> Tuple;
 };
 
