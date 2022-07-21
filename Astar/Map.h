@@ -18,8 +18,6 @@ public:
 	};
 public:
 	Map()
-		:
-		finder(tileROW, tileCOL)
 	{
 		tiles.resize(90);
 		for (int y = 0; y < tileCOL; y++)
@@ -89,20 +87,13 @@ public:
 	}
 	void ResultDraw()
 	{
-		for (int i = 0; i < tileCOL; i++)
+		for (int i = 0; i < tileROW * tileCOL; i++)
 		{
-			for (int j = 0; j < tileROW; j++)
-			{
-				switch (grid[i][j])
-				{
-					case 
-				}
-			}
-			
+			if()
 		}
 	}
 private:
-	std::vector<std::vector<int>> grid =
+	std::array<std::array<int, 10>, 9> grid =
 	{
 	{
 		{{0,0,0,0,0,0,0,0,0,0}},

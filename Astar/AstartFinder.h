@@ -111,7 +111,7 @@ public:
 		}
 		printf("Failed to fine the Destination Cell\n");
 	}
-	std::stack<Pair> getPath() const
+	std::vector<Pair> getPath() const
 	{
 		return Path;
 	}
@@ -155,21 +155,21 @@ private:
 		int col = dest.second;
 		Pair next_node = cellDetails[row][col].parent;
 		do {
-			Path.push(next_node);
+			Path.push_back(next_node);
 			next_node = cellDetails[row][col].parent;
 			row = next_node.first;
 			col = next_node.second;
 		} while (cellDetails[row][col].parent != next_node);
 
-		Path.emplace(row, col);
+		Path.emplace_back(row, col);
 		while (!Path.empty())
 		{
-			Pair p = Path.top();
-			Path.pop();
+			Pair p = Path.back();
+			//Path.pop();
 			//printf("-> (%d, %d)", p.first, p.second);
 		}
 	}
 private:
-	std::stack<Pair> Path;
+	std::vector<Pair> Path;
 };
 
