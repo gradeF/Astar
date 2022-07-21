@@ -178,10 +178,10 @@ int main()
 	}
 	};
 
-	Pair src( 8, 0 );
+	//Pair src( 8, 0 );
 
-	Pair dest( 0, 0 );
+	//Pair dest( 0, 0 );
 
-	aStarSearch( grid, src, dest );
+	//aStarSearch( grid, src, dest );
 }
 

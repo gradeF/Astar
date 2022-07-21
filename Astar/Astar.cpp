@@ -3,8 +3,9 @@
 
 #include "framework.h"
 #include "Astar.h"
-#include "Tile.h"
+#include "Map.h"
 #include "vec2.h"
+#include "tile.h"
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -12,6 +13,7 @@ HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
+Map map;
 Tile tile;
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
@@ -126,6 +128,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    static HDC hdc;
     switch (message)
     {
     case WM_COMMAND:
@@ -146,15 +149,38 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_LBUTTONDOWN:
-        const Vec2<float> position( LOWORD( lParam ), HIWORD( lParam ) );
-        //tile.InputKeyButton( position );
+    {   
+        HDC hdc = GetDC(hWnd);
+        const Vec2<int> position( LOWORD( lParam ), HIWORD( lParam ) );
+        map.Checkmouse(hdc, position);
+        DeleteDC(hdc);
+    }
+        break;
+    case WM_RBUTTONDOWN:
+    {
+        HDC hdc = GetDC(hWnd);
+        const Vec2<int> position(LOWORD(lParam), HIWORD(lParam));
+        map.Checkmouse2(hdc, position);
+        DeleteDC(hdc);
+    }
+        break;
+    case WM_MBUTTONDOWN:
+    {
+        HDC hdc = GetDC(hWnd);
+        const Vec2<int> position(LOWORD(lParam), HIWORD(lParam));
+        map.Checkmouse3(hdc, position);
+        DeleteDC(hdc);
+    }
         break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
+            hdc = BeginPaint(hWnd, &ps);
             // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-            tile.DrawTile(hdc);
+            map.Draw(hdc);
+            TextOut(hdc, 600, 100, _T("마우스 왼쪽 : Startposition"), 22);
+            TextOut(hdc, 600, 120, _T("마우스 오른쪽 : Targetposition"), 24);
+            TextOut(hdc, 600, 140, _T("마우스 휠 : Block"), 13);
             EndPaint(hWnd, &ps);
         }
         break;

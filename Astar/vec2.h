@@ -13,7 +13,7 @@ public:
 		x(x), y(y)
 	{}
 	~Vec2() {};
-	bool operator==(const Vec2& v)
+	bool operator==(const Vec2& vec)
 	{
 		if (x == vec.x && y == vec.y)
 			return true;
