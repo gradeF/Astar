@@ -171,5 +171,7 @@ private:
 	}
 private:
 	std::vector<Pair> Path;
+private:
+	
 };
 

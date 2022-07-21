@@ -89,7 +89,7 @@ public:
 	{
 		for (int i = 0; i < tileROW * tileCOL; i++)
 		{
-			if()
+			tiles[i]; 
 		}
 	}
 private:
