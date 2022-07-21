@@ -172,6 +172,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         DeleteDC(hdc);
     }
         break;
+    case WM_KEYDOWN:
+    {
+        switch (wParam)
+        {
+        case VK_SPACE:
+            map.Find();
+            break;
+        }
+    }
+        break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;

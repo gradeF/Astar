@@ -10,6 +10,7 @@
 #include <tuple>
 class AstartFinder
 {
+public:
 	typedef std::pair<int, int> Pair;
 	typedef std::tuple<double, int, int> Tuple;
 
@@ -26,59 +27,7 @@ class AstartFinder
 		{}
 	};
 
-	template<size_t ROW, size_t COL>
-	bool isValide(const std::array<std::array<int, COL>, ROW>& grid, const Pair& point)
-	{
-		if (ROW > 0 && COL > 0)
-		{
-			return (point.first >= 0) && (point.first < ROW)
-				&& (point.second >= 0) && (point.second < COL);
-		}
-		return false;
-	}
-
-	template<size_t ROW, size_t COL>
-	bool isUnBlocked(const std::array<std::array<int, COL>, ROW>& grid, const Pair& point)
-	{
-		return isValide(grid, point) && grid[point.first][point.second] == 1;
-	}
-
-	bool isDestination(const Pair& position, const Pair& dest)
-	{
-		return position == dest;
-	}
-
-	double calculateHValue(const Pair& src, const Pair& dest)
-	{
-		return sqrt((src.first - dest.first) * (src.first - dest.first)
-			+ (src.second - dest.second) * (src.second - dest.second));
-	}
-
-	template<size_t ROW, size_t COL>
-	void tracePath(const std::array<std::array<cell, COL>, ROW>& cellDetails, const Pair& dest)
-	{
-		printf("\nThe Path is");
-
-		std::stack<Pair> Path;
-
-		int row = dest.first;
-		int col = dest.second;
-		Pair next_node = cellDetails[row][col].parent;
-		do {
-			Path.push(next_node);
-			next_node = cellDetails[row][col].parent;
-			row = next_node.first;
-			col = next_node.second;
-		} while (cellDetails[row][col].parent != next_node);
-
-		Path.emplace(row, col);
-		while (!Path.empty())
-		{
-			Pair p = Path.top();
-			Path.pop();
-			printf("-> (%d, %d)", p.first, p.second);
-		}
-	}
+	
 
 	template<size_t ROW, size_t COL>
 	void aStarSearch(const std::array<std::array<int, COL>, ROW>& grid, const Pair& src, const Pair& dest)
@@ -89,7 +38,7 @@ class AstartFinder
 			return;
 		}
 
-		if (!isUnBlocked(grid, src) || !isUnBlocked(grid, dest))
+		if (isUnBlocked(grid, src) || isUnBlocked(grid, dest))
 		{
 			printf("Source or the destination is blocked\n");
 			return;
@@ -162,20 +111,65 @@ class AstartFinder
 		}
 		printf("Failed to fine the Destination Cell\n");
 	}
-
-	std::array<std::array<int, 10>, 9> grid =
+	std::stack<Pair> getPath() const
 	{
-	{
-		{{1,0,1,1,1,1,0,1,1,1}},
-		{{1,1,1,0,1,1,1,0,1,1}},
-		{{1,1,1,0,1,1,0,1,0,1}},
-		{{0,0,1,0,1,0,0,0,0,1}},
-		{{1,1,1,0,1,1,1,0,1,0}},
-		{{1,0,1,1,1,1,0,1,0,0}},
-		{{1,0,0,0,0,1,0,0,0,1}},
-		{{1,0,1,1,1,1,0,1,1,1}},
-		{{1,1,1,0,0,0,1,0,0,1}}
+		return Path;
 	}
-	};
+private:
+	template<size_t ROW, size_t COL>
+	bool isValide(const std::array<std::array<int, COL>, ROW>& grid, const Pair& point)
+	{
+		if (ROW > 0 && COL > 0)
+		{
+			if ((point.first >= 0) && (point.first < ROW)
+				&& (point.second >= 0) && (point.second < COL))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	template<size_t ROW, size_t COL>
+	bool isUnBlocked(const std::array<std::array<int, COL>, ROW>& grid, const Pair& point)
+	{
+		return isValide(grid, point) && grid[point.first][point.second] == 5;
+	}
+
+	bool isDestination(const Pair& position, const Pair& dest)
+	{
+		return position == dest;
+	}
+
+	double calculateHValue(const Pair& src, const Pair& dest)
+	{
+		return sqrt((src.first - dest.first) * (src.first - dest.first)
+			+ (src.second - dest.second) * (src.second - dest.second));
+	}
+
+	template<size_t ROW, size_t COL>
+	void tracePath(const std::array<std::array<cell, COL>, ROW>& cellDetails, const Pair& dest)
+	{
+		//printf("\nThe Path is");
+		int row = dest.first;
+		int col = dest.second;
+		Pair next_node = cellDetails[row][col].parent;
+		do {
+			Path.push(next_node);
+			next_node = cellDetails[row][col].parent;
+			row = next_node.first;
+			col = next_node.second;
+		} while (cellDetails[row][col].parent != next_node);
+
+		Path.emplace(row, col);
+		while (!Path.empty())
+		{
+			Pair p = Path.top();
+			Path.pop();
+			//printf("-> (%d, %d)", p.first, p.second);
+		}
+	}
+private:
+	std::stack<Pair> Path;
 };
 
