@@ -83,13 +83,25 @@ public:
 	}
 	void Find()
 	{
-		//finder.aStarSearch( grid, start, target );
+		finder.aStarSearch( grid, start, target );
+	}
+	void PrintResult()
+	{
+		std::vector<Vec2<int>> p;
+		p = finder.getPath();
+		for (int i = 0; i < tileCOL * tileROW; ++i)
+		{
+			tiles[i].SetPos({ p[i] });
+		}
+	}
+	void DrawResult(HDC hdc)
+	{
+		for (int i = 0; i < tileROW * tileCOL; i++)
+		{
+			tiles[i].DrawTile(hdc);
+		}
 	}
 	
-	std::vector<std::vector<int>> getGrid()
-	{
-		return grid;
-	}
 public:
 	std::vector<std::vector<int>> grid =
 	{
@@ -112,8 +124,8 @@ private:
 	const int tileSize = Tile::getlength();
 
 	std::vector<Tile> tiles;
-	//AstartFinder finder;
-	
+	AstartFinder finder = { tileROW,tileCOL };
+	  
 	Vec2<int> start;
 	Vec2<int> target;
 };

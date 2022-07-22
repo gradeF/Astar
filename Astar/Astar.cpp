@@ -178,6 +178,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
         case VK_SPACE:
             map.Find();
+            map.DrawResult(hdc);
             break;
         }
     }

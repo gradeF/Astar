@@ -9,33 +9,39 @@
 #include <stack>
 #include <tuple>
 #include "vec2.h"
-#include "Map.h"
-struct cell
-	{
-	Vec2<int> parent;
-	float h, f, g;
-	cell()
-		:
-		parent(-1, -1),
-		f(-1),
-		g(-1),
-		h(-1)
-	{}
-	};
+
 class AstartFinder
 {
 public:
+	struct cell
+	{
+		Vec2<int> parent;
+		float h, f, g;
+		cell()
+			:
+			parent(-1, -1),
+			f(-1),
+			g(-1),
+			h(-1)
+		{}
+	};
+public:
+	AstartFinder(int row, int col)
+		:
+		row(row),
+		col(col)
+	{}
 	void aStarSearch(std::vector<std::vector<int>>& grid, Vec2<int>& start, Vec2<int>& target)
 	{
 		if (!isValid(grid, start))
 		{
 			return;
 		}
-		if (!isUnBlocked(grid, start) && !isUnBlocked(grid, target))
+		if (isUnBlocked(grid, start) && isUnBlocked(grid, target))
 		{
 			return;
 		}
-		if (!isDestination(start, target))
+		if (isDestination(start, target))
 		{
 			return;
 		}
@@ -98,6 +104,10 @@ public:
 			}
 		}
 	}
+	std::vector<Vec2<int>> getPath() const
+	{
+		return Path;
+	}
 private:
 	bool isValid(std::vector<std::vector<int>>& grid, Vec2<int>& position)
 	{
@@ -129,30 +139,26 @@ private:
 
 	void tracePath(std::vector<std::vector<cell>>& cell, const Vec2<int>& target)
 	{
-		std::stack<Vec2<int>> Path;
-
+		
 		int row = target.x;
 		int col = target.y;
 		Vec2<int> next_node = cell[row][col].parent;
 		do
 		{
-			Path.push(next_node);
+			Path.push_back(next_node);
 			next_node = cell[row][col].parent;
 			row = next_node.x;
 			col = next_node.y;
 		} while (cell[row][col].parent != next_node);
 
-		Path.emplace(row, col);
-		while (!Path.empty())
-		{
-			Vec2<int> p = Path.top();
-			Path.pop();
-		}
-	}
+		Path.emplace_back(row, col);
 
+	}
+	
 private:
 	Vec2<int> position;
 	typedef std::tuple<double, int, int> tuple;
+	std::vector<Vec2<int>> Path;
 	int row=0;
 	int col=0;
 };
