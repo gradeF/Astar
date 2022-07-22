@@ -112,7 +112,7 @@ void aStarSearch( const std::array<std::array<int, COL>, ROW>& grid, const Pair&
 	cellDetails[i][j].h = 0.0;
 	cellDetails[i][j].parent = { i,j };
 
-	std::priority_queue<Tuple, std::vector<Tuple>, std::greater<Tuple>> openList;
+	std::priority_queue<Tuple, std::vector<Tuple>> openList;
 
 	openList.emplace( 0.0, i, j );
 

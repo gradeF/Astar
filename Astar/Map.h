@@ -83,12 +83,9 @@ public:
 	}
 	void Find()
 	{
-		finder.aStarSearch( grid, start, target );
+		//finder.aStarSearch( grid, start, target );
 	}
-	void ResultDraw()
-	{
-		
-	}
+	
 	std::vector<std::vector<int>> getGrid()
 	{
 		return grid;
@@ -115,10 +112,9 @@ private:
 	const int tileSize = Tile::getlength();
 
 	std::vector<Tile> tiles;
-	AstartFinder finder;
-	typedef std::pair<int, int> Pair;
-	typedef std::tuple<int , Pair> Tuple;
-	Pair start = { 0,0 };
-	Pair target = { 0,0 };
+	//AstartFinder finder;
+	
+	Vec2<int> start;
+	Vec2<int> target;
 };
 

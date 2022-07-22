@@ -8,136 +8,152 @@
 #include <set>
 #include <stack>
 #include <tuple>
+#include "vec2.h"
+#include "Map.h"
+struct cell
+	{
+	Vec2<int> parent;
+	float h, f, g;
+	cell()
+		:
+		parent(-1, -1),
+		f(-1),
+		g(-1),
+		h(-1)
+	{}
+	};
 class AstartFinder
 {
 public:
-	typedef std::pair<int, int> Pair;
-	typedef std::tuple<double, int, int> Tuple;
-	int ROW = 0;
-	int COL = 0;
-
-public:
-	
-	bool isValide( const std::vector<std::vector<int>>& grid, Pair& point )
+	void aStarSearch(std::vector<std::vector<int>>& grid, Vec2<int>& start, Vec2<int>& target)
 	{
-		if (ROW > 0 && COL > 0)
-		{
-			return (point.first >= 0) && (point.first < ROW)
-				&& (point.second >= 0) && (point.second < COL);
-		}
-		return false;
-	}
-	
-	bool isUnBlocked( const std::vector<std::vector<int>>& grid,  Pair& point )
-	{
-		return isValide( grid, point ) && grid[point.first][point.second] == 5;
-	}
-	bool isDestination( const Pair& position, const Pair& dest )
-	{
-		return position == dest;
-	}
-	double calculateHValue( const Pair& src, const Pair& dest )
-	{
-		return sqrt( (src.first - dest.first) * (src.first - dest.first)
-			+ (src.second - dest.second) * (src.second - dest.second) );
-	}
-	template<size_t ROW, size_t COL>
-	void tracePath( const std::vector<std::vector<int>>& cellDetails, const Pair& dest )
-	{
-		std::vector<Pair> Path;
-
-		int row = dest.first;
-		int col = dest.second;
-		Pair next_node = cellDetails[row][col].parent;
-		do
-		{
-			Path.push_back( next_node );
-			next_node = cellDetails[row][col].parent;
-			row = next_node.first;
-			col = next_node.second;
-		} while (cellDetails[row][col].parent != next_node);
-
-		Path.emplace_back( row, col );
-		while (!Path.empty())
-		{
-			Pair p = Path.top();
-			Path.pop_back();
-		}
-	}
-	template<size_t ROW, size_t COL>
-	void aStarSearch( const std::vector<std::vector<int>>& grid, const Pair& src, const Pair& dest )
-	{
-		if (!isValide( grid, src ))
+		if (!isValid(grid, start))
 		{
 			return;
 		}
-		if (!isUnBlocked( grid, src ) || !isUnBlocked( grid, dest ))
+		if (!isUnBlocked(grid, start) && !isUnBlocked(grid, target))
 		{
 			return;
 		}
-		if (isDestination( src, dest ))
+		if (!isDestination(start, target))
 		{
 			return;
 		}
 
-		bool closedList[ROW][COL];
-		std::memset( closedList, false, sizeof( closedList ) );
-
+		std::vector<std::vector<bool>> closedList;
 		std::vector<std::vector<cell>> cellDetails;
-
 		int i, j;
-		i = src.first, j = src.second;
-		cellDetails[i][j].f = 0;
-		cellDetails[i][j].g = 0;
-		cellDetails[i][j].h = 0;
+		i = start.x;
+		j = start.y;
+		cellDetails[i][j].f = 0.0f;
+		cellDetails[i][j].g = 0.0f;
+		cellDetails[i][j].h = 0.0f;
 		cellDetails[i][j].parent = { i,j };
 
-		std::priority_queue < Tuple, std::vector < Tuple>, std::greater<Tuple>> openList;
+		std::priority_queue<tuple, std::vector<tuple>, std::greater<tuple>> openlist;
 
-		openList.emplace( 0, i, j );
+		openlist.emplace(0.0, i, j);
 
-		while (!openList.empty())
+		while (!openlist.empty())
 		{
-			const Tuple& p = openList.top();
-			i = std::get<1>( p );
-			j = std::get<2>( p );
+			const tuple& p = openlist.top();
+			i = std::get<1>(p);
+			j = std::get<2>(p);
 
-			openList.pop();
+			openlist.pop();
 			closedList[i][j] = true;
+		}
 
-			for (int add_x = -1; add_x <= 1; add_x++)
+		for (int add_x = -1; add_x <= 1; add_x++)
+		{
+			for (int add_y = -1; add_y <= 1; add_y++)
 			{
-				for (int add_y = -1; add_y <= 1; add_y++)
+				Vec2<int> neighbour(i + add_x, j + add_y);
+				if (isValid(grid, neighbour))
 				{
-					Pair neighbour( i + add_x, j + add_y );
-					if (isValide( grid, neighbour ))
+					if (isDestination(neighbour, target))
 					{
-						if (isDestination( neighbour, dest ))
+						cellDetails[neighbour.x][neighbour.y].parent = { i,j };
+						tracePath(cellDetails, target);
+						return;
+					}
+					else if (!closedList[neighbour.x][neighbour.y] && isUnBlocked(grid, neighbour))
+					{
+						double hNew, gNew, fNew;
+						gNew = cellDetails[i][j].g + 1.0;
+						hNew = calculateHvalue(neighbour, target);
+						fNew = gNew + hNew;
+
+						if (cellDetails[neighbour.x][neighbour.y].f == -1 ||
+							cellDetails[neighbour.x][neighbour.y].f > fNew)
 						{
-							cellDetails[neighbour.first][neighbour.second].parent = { i,j };
-							tracePath( cellDetails, dest );
-							return;
-						}
-						else if (!closeList[neighbour.first][neighbour.second] && isUnBlocked( grid, neighbour ))
-						{
-							int gNew, hNew, fNew;
-							gNew = cellDetails[i][j].g + 1.0;
-							hNew = calculateHValue( neighbour, dest );
-							fNew = gNew + hNew;
-							if (cellDetails[neighbour.first][neighbour.second].f == -1 ||
-								cellDetails[neighbour.first][neighbour.second].f > fNew)
-							{
-								openList.emplace( fNew, neighbour.first, neighbour.second );
-								cellDetails[neighbour.first][neighbour.second].g = gNew;
-								cellDetails[neighbour.first][neighbour.second].h = hNew;
-								cellDetails[neighbour.first][neighbour.second].f = fNew;
-								cellDetails[neighbour.first][neighbour.second].parent = { i,j };
-							}
+							openlist.emplace(fNew, neighbour.x, neighbour.y);
+							cellDetails[neighbour.x][neighbour.y].g = gNew;
+							cellDetails[neighbour.x][neighbour.y].h = hNew;
+							cellDetails[neighbour.x][neighbour.y].f = fNew;
+							cellDetails[neighbour.x][neighbour.y].parent = { i,j };
 						}
 					}
 				}
 			}
 		}
 	}
+private:
+	bool isValid(std::vector<std::vector<int>>& grid, Vec2<int>& position)
+	{
+		if (row > 0 && col > 0)
+		{
+			if (position.x >= 0 && position.x < row
+				&& position.y >= 0 && position.y < col)
+			{
+				return true;
+			}
+			return false;
+		}
+	}
+	bool isUnBlocked(std::vector<std::vector<int>>& grid, Vec2<int>& point)
+	{
+		return isValid(grid, point) && grid[point.x][point.y] == 5;
+	}
+
+	bool isDestination( Vec2<int>& position, Vec2<int>& target)
+	{
+		return position == target;
+	}
+
+	double calculateHvalue(Vec2<int>& src, Vec2<int>& dest)
+	{
+		return sqrt((src.x - dest.y) * (src.x - dest.y)
+			+ (src.x - dest.y) * (src.x - dest.y));
+	}
+
+	void tracePath(std::vector<std::vector<cell>>& cell, const Vec2<int>& target)
+	{
+		std::stack<Vec2<int>> Path;
+
+		int row = target.x;
+		int col = target.y;
+		Vec2<int> next_node = cell[row][col].parent;
+		do
+		{
+			Path.push(next_node);
+			next_node = cell[row][col].parent;
+			row = next_node.x;
+			col = next_node.y;
+		} while (cell[row][col].parent != next_node);
+
+		Path.emplace(row, col);
+		while (!Path.empty())
+		{
+			Vec2<int> p = Path.top();
+			Path.pop();
+		}
+	}
+
+private:
+	Vec2<int> position;
+	typedef std::tuple<double, int, int> tuple;
+	int row=0;
+	int col=0;
 };
 
