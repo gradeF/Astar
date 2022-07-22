@@ -37,7 +37,7 @@ public:
 		{
 			return;
 		}
-		if (isUnBlocked(grid, start) && isUnBlocked(grid, target))
+		if (!isUnBlocked(grid, start) && !isUnBlocked(grid, target))
 		{
 			return;
 		}
@@ -64,7 +64,9 @@ public:
 
 		std::priority_queue<tuple, std::vector<tuple>, std::greater<tuple>> openlist;
 
-		openlist.emplace(0.0, i, j);
+		openlist.emplace(0, i, j);
+		
+
 
 		while (!openlist.empty())
 		{
@@ -74,42 +76,45 @@ public:
 
 			openlist.pop();
 			closedList[i][j] = true;
-		}
 
-		for (int add_x = -1; add_x <= 1; add_x++)
-		{
-			for (int add_y = -1; add_y <= 1; add_y++)
+			for (int add_x = -1; add_x <= 1; add_x++)
 			{
-				Vec2<int> neighbour(i + add_x, j + add_y);
-				if (isValid(grid, neighbour))
+				for (int add_y = -1; add_y <= 1; add_y++)
 				{
-					if (isDestination(neighbour, target))
+					Vec2<int> neighbour(i + add_x, j + add_y);
+					if (isValid(grid, neighbour))
 					{
-						cellDetails[neighbour.x][neighbour.y].parent = { i,j };
-						tracePath(cellDetails, target);
-						return;
-					}
-					else if (!closedList[neighbour.x][neighbour.y] && isUnBlocked(grid, neighbour))
-					{
-						double hNew, gNew, fNew;
-						gNew = cellDetails[i][j].g + 1.0;
-						hNew = calculateHvalue(neighbour, target);
-						fNew = gNew + hNew;
-
-						if (cellDetails[neighbour.x][neighbour.y].f == -1 ||
-							cellDetails[neighbour.x][neighbour.y].f > fNew)
+						if (isDestination(neighbour, target))
 						{
-							openlist.emplace(fNew, neighbour.x, neighbour.y);
-							cellDetails[neighbour.x][neighbour.y].g = gNew;
-							cellDetails[neighbour.x][neighbour.y].h = hNew;
-							cellDetails[neighbour.x][neighbour.y].f = fNew;
 							cellDetails[neighbour.x][neighbour.y].parent = { i,j };
+							tracePath(cellDetails, target);
+							return;
+						}
+						else if (!closedList[neighbour.x][neighbour.y] && isUnBlocked(grid, neighbour))
+						{
+							int hNew, gNew, fNew;
+							gNew = cellDetails[i][j].g + 10;
+							hNew = calculateHvalue(neighbour, target);
+							fNew = gNew + hNew;
+
+							if (cellDetails[neighbour.x][neighbour.y].f == -1 ||
+								cellDetails[neighbour.x][neighbour.y].f > fNew)
+							{
+								openlist.emplace(fNew, neighbour.x, neighbour.y);
+								cellDetails[neighbour.x][neighbour.y].g = gNew;
+								cellDetails[neighbour.x][neighbour.y].h = hNew;
+								cellDetails[neighbour.x][neighbour.y].f = fNew;
+								cellDetails[neighbour.x][neighbour.y].parent = { i,j };
+							}
 						}
 					}
 				}
 			}
 		}
+
+		
 	}
+
 	std::vector<Vec2<int>> getPath() const
 	{
 		return Path;
@@ -129,7 +134,7 @@ private:
 	}
 	bool isUnBlocked(std::vector<std::vector<int>>& grid, Vec2<int>& point)
 	{
-		return isValid(grid, point) && grid[point.x][point.y] == 5;
+		return isValid(grid, point) && grid[point.x][point.y] != 5;
 	}
 
 	bool isDestination( Vec2<int>& position, Vec2<int>& target)
@@ -137,10 +142,13 @@ private:
 		return position == target;
 	}
 
-	double calculateHvalue(Vec2<int>& src, Vec2<int>& dest)
+	double calculateHvalue(Vec2<int>& src, Vec2<int>& target)
 	{
-		return sqrt((src.x - dest.y) * (src.x - dest.y)
-			+ (src.x - dest.y) * (src.x - dest.y));
+		int dx = abs(src.x - target.x);
+		int dy = abs(src.y - target.y);
+		
+		//h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
+		return dx + dy;
 	}
 
 	void tracePath(std::vector<std::vector<cell>>& cell, const Vec2<int>& target)
@@ -163,7 +171,7 @@ private:
 	
 private:
 	Vec2<int> position;
-	typedef std::tuple<double, int, int> tuple;
+	typedef std::tuple<int, int, int> tuple;
 	std::vector<Vec2<int>> Path;
 	int row=0;
 	int col=0;

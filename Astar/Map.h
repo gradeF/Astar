@@ -84,10 +84,12 @@ public:
 	void Find()
 	{
 		finder.aStarSearch( grid, start, target );
+		
 	}
-	void PrintResult()
+	void GetResult()
 	{
 		std::vector<Vec2<int>> p;
+		//p.resize(tileCOL * tileROW);
 		p = finder.getPath();
 		for (int i = 0; i < tileCOL * tileROW; ++i)
 		{
@@ -98,6 +100,7 @@ public:
 	{
 		for (int i = 0; i < tileROW * tileCOL; i++)
 		{
+			SelectObject(hdc, CreateSolidBrush(RGB(255, 0, 123)));
 			tiles[i].DrawTile(hdc);
 		}
 	}
