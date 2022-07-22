@@ -46,11 +46,17 @@ public:
 			return;
 		}
 
-		std::vector<std::vector<bool>> closedList;
-		std::vector<std::vector<cell>> cellDetails;
+		std::vector<std::vector<bool>> closedList(row);
+		std::vector<std::vector<cell>> cellDetails(row);
+		for (int k = 0; k < row; k++) {
+			closedList[k].resize(col);
+			cellDetails[k].resize(col);
+			
+		}
 		int i, j;
 		i = start.x;
 		j = start.y;
+		
 		cellDetails[i][j].f = 0.0f;
 		cellDetails[i][j].g = 0.0f;
 		cellDetails[i][j].h = 0.0f;
