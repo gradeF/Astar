@@ -177,8 +177,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (wParam)
         {
         case VK_SPACE:
-            map.Find();
-            map.DrawResult(hdc);
+            {
+                map.Find();
+                HDC hdc = GetDC( hWnd );
+                map.DrawResult( hdc );
+                DeleteDC( hdc );
+            }
+            break;
+        case VK_RETURN:
+            {
+                map.ResetAll();
+                HDC hdc = GetDC( hWnd );
+                map.Draw( hdc );
+                DeleteDC( hdc );
+            }
             break;
         }
     }

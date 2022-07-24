@@ -13,7 +13,7 @@ public:
 		x(x), y(y)
 	{}
 	~Vec2() {};
-	bool operator==(const Vec2& vec)
+	bool operator==(const Vec2& vec) const
 	{
 		if (x == vec.x && y == vec.y)
 			return true;
@@ -21,9 +21,9 @@ public:
 			return false;
 	}
 	
-	bool operator!=(const Vec2& vec)
+	bool operator!=(const Vec2& vec) const
 	{
-		if (x != vec.x && y != vec.y)
+		if (x != vec.x || y != vec.y)
 			return true;
 		else return false;
 	}
